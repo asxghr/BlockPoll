@@ -1,0 +1,17 @@
+# Installed dependencies
+node_modules/
+
+# Environment-specific secrets
+.env
+.env.*
+!.env.example
+
+# Generated build output
+dist/
+coverage/
+artifacts/
+cache/
+typechain-types/
+
+# System files
+.DS_Store
