@@ -1,111 +1,325 @@
+/* ==========================================================================
+   BlockPoll Civic-Editorial Design System
+   Visual Language: Archival Paper, Charcoal Lithography, Bold Offset Shadows
+   ========================================================================== */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Surface & Canvas Tokens */
+  --color-canvas: #F4F0E6;       /* Warm archival paper */
+  --color-surface: #FAF8F4;      /* Clean crisp parchment */
+  --color-panel: #ECE6D9;        /* Dense stock underlay */
+  
+  /* Ink & Contrast */
+  --color-ink: #1C1B1A;          /* Dense newsprint charcoal */
+  --color-ink-muted: #5C5854;    /* Secondary technical text */
+  --color-border: #1C1B1A;       /* Crisp machine-cut framing rule */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Primary Editorial Accents */
+  --color-cobalt: #3156D3;       /* Civic authority & navigation */
+  --color-vermilion: #EF5B3E;    /* Democratic urgency & voting trigger */
+  --color-chartreuse: #C7F36B;   /* Verified receipts & affirmative indicators */
+  --color-lavender: #BCA7E8;     /* Auxiliary contextual tint */
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Structural Geometry */
+  --border-width: 2px;
+  --border-width-thick: 3px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --shadow-offset: 3px 3px 0px 0px #1C1B1A;
+  --shadow-offset-hover: 1px 1px 0px 0px #1C1B1A;
+  --shadow-offset-card: 4px 4px 0px 0px #1C1B1A;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* Typography */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
+/* ==========================================================================
+   Typography Hierarchy
+   ========================================================================== */
+
+h1, h2, h3, h4, .serif-heading {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+
+.mono-tag, .mono-label, code, pre {
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Layout Containers
+   ========================================================================== */
+
+.app-container {
+  max-width: 1240px;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  padding: 0 1.5rem 3rem 1.5rem;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+.paper-card {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-offset-card);
+  padding: 1.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+.paper-panel {
+  background-color: var(--color-panel);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
+/* ==========================================================================
+   Buttons & Interactive Elements
+   ========================================================================== */
+
+.btn {
   display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.65rem 1.25rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-offset);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  user-select: none;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.btn:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-offset-hover);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px 0px #1C1B1A;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  border-color: #8C8883;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-cobalt);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--color-vermilion);
+  color: #FAF8F4;
+}
+
+.btn-cobalt {
+  background-color: var(--color-cobalt);
+  color: #FAF8F4;
+}
+
+.btn-chartreuse {
+  background-color: var(--color-chartreuse);
+  color: var(--color-ink);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+}
+
+/* ==========================================================================
+   Status Badges (Editorial Ink Stamp Style)
+   ========================================================================== */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.6rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+}
+
+.status-badge.ongoing {
+  background-color: #FFE6E1;
+  color: #B82A10;
+  border-color: #B82A10;
+}
+
+.status-badge.not-started {
+  background-color: var(--color-panel);
+  color: var(--color-ink-muted);
+  border-color: var(--color-ink-muted);
+}
+
+.status-badge.ended {
+  background-color: var(--color-ink);
+  color: #FAF8F4;
+  border-color: var(--color-ink);
+}
+
+.status-badge.verified {
+  background-color: #E2F8B7;
+  color: #274000;
+  border-color: #274000;
+}
+
+.status-badge.admin {
+  background-color: #E2E8FD;
+  color: #12349E;
+  border-color: #12349E;
+}
+
+/* ==========================================================================
+   Perforated Dividers & Rules
+   ========================================================================== */
+
+.ink-rule {
+  border: none;
+  border-top: var(--border-width) solid var(--color-border);
+  margin: 1.25rem 0;
+}
+
+.ink-rule-dashed {
+  border: none;
+  border-top: 2px dashed var(--color-border);
+  margin: 1.25rem 0;
+}
+
+.double-rule {
+  border-top: 3px double var(--color-border);
+  margin: 1rem 0;
+}
+
+/* ==========================================================================
+   Progress Bar
+   ========================================================================== */
+
+.vote-bar-container {
+  width: 100%;
+  height: 14px;
+  background-color: var(--color-panel);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.vote-bar-fill {
+  height: 100%;
+  background-color: var(--color-cobalt);
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ==========================================================================
+   Modal Dialog Styles
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(28, 27, 26, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal-sheet {
+  background-color: var(--color-surface);
+  border: var(--border-width-thick) solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 6px 6px 0px 0px #1C1B1A;
+  max-width: 540px;
+  width: 100%;
+  padding: 2rem;
+  animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ==========================================================================
+   Form Inputs
+   ========================================================================== */
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+  color: var(--color-ink);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  color: var(--color-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-cobalt);
+  box-shadow: 2px 2px 0px 0px #1C1B1A;
+}
+
+.form-input.mono {
+  font-family: var(--font-mono);
 }

@@ -4,8 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "hardhat run --no-compile scripts/test.ts",
-    "deploy": "hardhat run --no-compile scripts/deploy.ts"
+    "test": "hardhat run scripts/testBlockPoll.ts",
+    "test:stage1": "hardhat run scripts/testStage1.ts",
+    "test:stage2": "hardhat run scripts/testStage2.ts",
+    "test:blockpoll": "hardhat run scripts/testBlockPoll.ts",
+    "test:legacy": "hardhat run scripts/test.ts",
+    "deploy": "hardhat run --network localhost scripts/deployBlockPoll.ts",
+    "deploy:localhost": "hardhat run --network localhost scripts/deployBlockPoll.ts",
+    "deploy:in-memory": "hardhat run scripts/deployBlockPoll.ts",
+    "deploy:legacy": "hardhat run scripts/deploy.ts",
+    "verify:localhost": "hardhat run --network localhost scripts/verifyPersistence.ts"
   },
   "keywords": [],
   "author": "",
