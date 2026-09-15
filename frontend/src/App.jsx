@@ -18,6 +18,7 @@ import {
   adminRegisterVoter,
   adminStartElection,
   adminEndElection,
+  castVote,
   parseContractError,
   LOCAL_CHAIN_ID
 } from './services/contractService';
@@ -552,6 +553,115 @@ export default function App() {
     }
   };
 
+  // Handler 5: Cast Ballot (Stage 3B)
+  const handleCastVote = async (candidateId) => {
+    // 1. Pre-flight checks
+    if (!walletState.isConnected || !walletState.address) {
+      setFeedback({
+        type: 'warning',
+        title: 'Wallet Disconnected',
+        message: 'Please connect your MetaMask wallet to cast your official ballot.',
+        details: null
+      });
+      return false;
+    }
+
+    if (!walletState.isCorrectChain) {
+      setFeedback({
+        type: 'warning',
+        title: 'Incorrect Network',
+        message: `Please switch your wallet to Hardhat Localhost (Chain ID ${LOCAL_CHAIN_ID}) before voting.`,
+        details: null
+      });
+      return false;
+    }
+
+    if (electionData.state !== 1) {
+      setFeedback({
+        type: 'warning',
+        title: 'Voting Unavailable',
+        message: electionData.state === 0
+          ? 'The election has not started yet (State: 0). The administrator must open the polls first.'
+          : 'The election has concluded (State: 2). No further ballots can be cast.',
+        details: null
+      });
+      return false;
+    }
+
+    if (!voterStatus.isRegistered) {
+      setFeedback({
+        type: 'error',
+        title: 'Voter Not Registered',
+        message: `Connected wallet address ${walletState.address} is not on the smart contract registration whitelist.`,
+        details: null
+      });
+      return false;
+    }
+
+    if (voterStatus.hasVoted) {
+      setFeedback({
+        type: 'warning',
+        title: 'Ballot Already Cast',
+        message: `This wallet has already cast an on-chain ballot for Candidate #${voterStatus.votedCandidateId}. Duplicate votes are rejected.`,
+        details: null
+      });
+      return false;
+    }
+
+    // 2. Awaiting Wallet Confirmation
+    setActionLoading('vote');
+    setFeedback({
+      type: 'info',
+      title: 'Awaiting Wallet Confirmation',
+      message: `Confirm your ballot transaction for Candidate #${candidateId} in MetaMask...`,
+      details: null
+    });
+
+    try {
+      // 3. Submit transaction
+      const tx = await castVote(candidateId);
+      setFeedback({
+        type: 'info',
+        title: 'Transaction Broadcast',
+        message: 'Ballot transaction submitted. Waiting for local block confirmation...',
+        details: `Tx Hash: ${tx.hash}`
+      });
+
+      // 4. Wait for mining
+      const receipt = await tx.wait();
+      setFeedback({
+        type: 'success',
+        title: 'Ballot Confirmed On-Chain!',
+        message: `Your vote for Candidate #${candidateId} was successfully recorded in block #${receipt.blockNumber}!`,
+        details: `Tx: ${tx.hash}`
+      });
+
+      // 5. Refresh election metrics & voter credentials in parallel
+      await Promise.all([
+        loadBlockchainData(),
+        refreshVoterStatus(walletState.address)
+      ]);
+      return true;
+    } catch (err) {
+      const errorMsg = parseContractError(err);
+      const isRejected =
+        err.code === 4001 ||
+        err.code === 'ACTION_REJECTED' ||
+        err.message?.includes('user rejected') ||
+        err.message?.includes('User rejected');
+
+      setFeedback({
+        type: isRejected ? 'info' : 'error',
+        title: isRejected ? 'Ballot Submission Cancelled' : 'Failed to Cast Ballot',
+        message: errorMsg,
+        details: null
+      });
+      return false;
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top Status & Network Bar */}
@@ -608,6 +718,9 @@ export default function App() {
             walletState={walletState}
             voterStatus={voterStatus}
             onConnectWallet={handleConnectWallet}
+            onCastVote={handleCastVote}
+            isVoting={actionLoading === 'vote'}
+            onSwitchNetwork={handleSwitchNetwork}
           />
         )}
 
@@ -650,10 +763,11 @@ export default function App() {
             <strong>BLOCKPOLL SYSTEM</strong> — Transparent Local Blockchain Voting
           </div>
           <div style={{ color: 'var(--color-ink-muted)' }}>
-            Stage 2: Live Read-Only Contract Queries // ethers.js v6 // Hardhat 31337
+            Stage 3B: Live On-Chain Voting & Tallies // ethers.js v6 // Hardhat 31337
           </div>
         </div>
       </footer>
     </div>
   );
 }
+

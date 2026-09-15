@@ -58,9 +58,12 @@ To connect your browser wallet:
 
 ---
 
-## 3. Frontend Stage 2 Capabilities
+## 3. Frontend Capabilities & Features
 
-- **Live On-Chain Data:** Reads election title, state, candidate roster, and vote counts directly from the smart contract via `ethers.js`.
-- **MetaMask Wallet Integration:** Detects MetaMask presence, connects accounts, verifies network Chain ID (`31337`), and inspects real on-chain voter registration status.
+- **Live On-Chain Data:** Reads election title, state, candidate roster, and vote counts directly from the smart contract via `ethers.js` v6.
+- **MetaMask Wallet Integration:** Automatically detects MetaMask, connects accounts, verifies network Chain ID (`31337`), and inspects on-chain voter registration status.
+- **Admin Management Station:** Allows the contract admin to register candidates, whitelist voters, start the election (`startElection()`), and conclude the election (`endElection()`).
+- **Active Ballot Casting:** Eligible registered voters can review candidate information in an accessible confirmation modal, submit their official ballot on-chain (`vote(candidateId)`), and receive immediate block confirmation feedback.
+- **One-Vote Enforcement:** Disables ballot submission once a wallet has voted and highlights the recorded ballot on the voter dashboard.
 - **Diagnostic Handling:** Warns if MetaMask is missing, wallet is disconnected, network mismatch occurs, or local node is offline.
-- **Read-Only Scope:** In Stage 2, guest and voter interfaces are read-only. Transaction execution (`vote`, `registerCandidate`, `startElection`, etc.) will be activated in Frontend Stage 3.
+

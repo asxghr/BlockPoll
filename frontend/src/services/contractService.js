@@ -278,6 +278,18 @@ export function parseContractError(err) {
   if (msg.includes('Election is not ongoing')) {
     return 'Election is not currently in the Ongoing state.';
   }
+  if (msg.includes('You are not registered to vote')) {
+    return 'Your connected wallet is not registered to vote in this election.';
+  }
+  if (msg.includes('You have already cast your vote') || msg.includes('You have already voted')) {
+    return 'Your wallet has already cast a ballot in this election. Duplicate votes are prevented by the contract.';
+  }
+  if (msg.includes('Invalid candidate ID')) {
+    return 'Selected candidate ID is invalid or does not exist on-chain.';
+  }
+  if (msg.includes('Invalid action for current election state')) {
+    return 'Voting is only permitted while the election is in the Ongoing state (State: 1).';
+  }
 
   return msg.split('\n')[0] || 'Transaction execution failed.';
 }
@@ -327,4 +339,21 @@ export async function adminEndElection() {
   const tx = await contract.endElection();
   return tx;
 }
+
+/**
+ * Voter Action: castVote(candidateId)
+ * Calls the Solidity vote(uint256 _candidateId) function with the active signer.
+ */
+export async function castVote(candidateId) {
+  const id = Number(candidateId);
+  if (!id || id <= 0) {
+    throw new Error('Please select a valid candidate before submitting your ballot.');
+  }
+
+  const contract = await getSignerContract();
+  const tx = await contract.vote(id);
+  return tx;
+}
+
+export const vote = castVote;
 

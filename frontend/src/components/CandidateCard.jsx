@@ -10,7 +10,10 @@ export default function CandidateCard({
   totalVotes = 0,
   electionState = 0, // 0 = NotStarted, 1 = Ongoing, 2 = Ended
   userRole = 'guest', // 'guest', 'voter_unvoted', 'voter_voted', 'admin'
-  onVote = null
+  canVote = false,
+  onVoteClick = null,
+  votingDisabledReason = '',
+  isVotedByMe = false
 }) {
   const { id, name, voteCount, accentColor = '#3156D3' } = candidate;
   const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
@@ -33,7 +36,8 @@ export default function CandidateCard({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        borderLeft: `6px solid ${accentColor}`
+        borderLeft: `6px solid ${accentColor}`,
+        boxShadow: isVotedByMe ? '0 0 0 2px var(--color-chartreuse), 4px 4px 0px #1C1B1A' : undefined
       }}
     >
       <div>
@@ -52,9 +56,15 @@ export default function CandidateCard({
           >
             ON-CHAIN ID #{id}
           </span>
-          {isOngoing && <StatusBadge variant="ongoing">Active Ballot</StatusBadge>}
-          {electionState === 2 && <StatusBadge variant="ended">Final Result</StatusBadge>}
-          {electionState === 0 && <StatusBadge variant="not-started">Registered</StatusBadge>}
+          {isVotedByMe ? (
+            <StatusBadge variant="verified">★ YOUR BALLOT</StatusBadge>
+          ) : (
+            <>
+              {isOngoing && <StatusBadge variant="ongoing">Active Ballot</StatusBadge>}
+              {electionState === 2 && <StatusBadge variant="ended">Final Result</StatusBadge>}
+              {electionState === 0 && <StatusBadge variant="not-started">Registered</StatusBadge>}
+            </>
+          )}
         </div>
 
         {/* Candidate Identity with Neutral Offline SVG Seal */}
@@ -134,7 +144,7 @@ export default function CandidateCard({
         </div>
       </div>
 
-      {/* Card Footer Action (Stage 2: Read-Only preview of actions) */}
+      {/* Card Footer Action */}
       <div>
         {userRole === 'guest' && (
           <button
@@ -148,26 +158,55 @@ export default function CandidateCard({
         )}
 
         {userRole === 'voter_unvoted' && (
-          <button
-            type="button"
-            className="btn btn-secondary"
-            disabled
-            style={{ width: '100%', fontSize: '0.8125rem' }}
-            title="Transactions will be enabled in Frontend Stage 3"
-          >
-            Voting Enabled in Stage 3
-          </button>
+          canVote ? (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => onVoteClick && onVoteClick(candidate)}
+              style={{ width: '100%', fontSize: '0.875rem' }}
+            >
+              Cast Ballot
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              disabled
+              title={votingDisabledReason || 'Voting Unavailable'}
+              style={{ width: '100%', fontSize: '0.8125rem' }}
+            >
+              {votingDisabledReason || 'Voting Unavailable'}
+            </button>
+          )
         )}
 
         {userRole === 'voter_voted' && (
-          <button
-            type="button"
-            className="btn btn-secondary"
-            disabled
-            style={{ width: '100%', fontSize: '0.8125rem' }}
-          >
-            Ballot Already Cast
-          </button>
+          isVotedByMe ? (
+            <div
+              className="paper-panel"
+              style={{
+                padding: '0.5rem',
+                textAlign: 'center',
+                backgroundColor: '#F3FCE7',
+                border: '1.5px solid var(--color-chartreuse)',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+                color: '#214705'
+              }}
+            >
+              ★ YOUR CAST BALLOT (RECORDED ON-CHAIN)
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              disabled
+              style={{ width: '100%', fontSize: '0.8125rem' }}
+            >
+              Ballot Already Cast
+            </button>
+          )
         )}
 
         {userRole === 'admin' && (
